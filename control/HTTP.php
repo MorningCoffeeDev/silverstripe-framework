@@ -56,14 +56,20 @@ class HTTP {
 		return "$protocol://". $_SERVER['HTTP_HOST'] . $url;
 	}
 
+	public static $rewriteHashLinks = false;
+
 	/**
 	 * Turn all relative URLs in the content to absolute URLs
+	 * @param string  $html
+	 * @param boolean $rewriteHashLinks Should URLs starting with # be rewritten?
 	 */
-	public static function absoluteURLs($html) {
+	public static function absoluteURLs($html, $rewriteHashLinks = true) {
+		self::$rewriteHashLinks = $rewriteHashLinks;
 		$html = str_replace('$CurrentPageURL', $_SERVER['REQUEST_URI'], $html);
 		return HTTP::urlRewriter($html, function($url) {
 			//no need to rewrite, if uri has a protocol (determined here by existence of reserved URI character ":")
-			if(preg_match('/^\w+:/', $url)){
+			$pattern = '/^' . (HTTP::$rewriteHashLinks ? '\w+:' : '#|(\w+:)') . '/';
+			if(preg_match($pattern, $url)){
 				return $url;
 			}
 			return Director::absoluteURL($url, true);

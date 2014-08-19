@@ -385,7 +385,7 @@ class Email extends ViewableData {
 			}
 			
 			// Rewrite relative URLs
-			$this->body = HTTP::absoluteURLs($fullBody);
+			$this->body = HTTP::absoluteURLs($fullBody, false);
 		}
 		Config::inst()->update('SSViewer', 'source_file_comments', $origState);
 
